@@ -6,7 +6,7 @@ export const authEndpoint = "https://accounts.spotify.com/authorize";
 const redirectUri = "http://localhost:3000/";
 
 //Client id is got from spotify developers.
-const clientId = "bc7a759ec9424c8a94be098c7be3b077";
+const clientId = "25fcd61d0ed54914b2b3329c2b6f9746";
 
 //Users scopes provide the different read only features of spotify.
 const scopes = [
