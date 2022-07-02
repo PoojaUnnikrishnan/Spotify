@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import spotifyWebApi from "spotify-web-api-js";
 
 import "./App.css";
 
+import { useStateValue } from "./StateProvider";
 import Login from "./components/Login/Login";
 import { getTokenFromUrl } from "./components/Login/Spotify";
 import Player from "./components/Player/Player";
-
+//spotify-web-api package gives a functionality of api.
 const spotify = new spotifyWebApi();
 
 function App() {
-  const [token, setToken] = useState(null);
+  const [{ token }, dispatch] = useStateValue(); //to use anything from data layer we have to use it like this inside an object.
   //run code based on a condition
   //spotify take care of whole authentication
   useEffect(() => {
@@ -18,17 +19,43 @@ function App() {
     window.location.hash = "";
     const _token = hash.access_token;
     if (_token) {
-      setToken(_token); //temp token
-      spotify.setAccessToken(_token); //This is getting that token and giving to spotify api
+      dispatch({
+        type: "SET_TOKEN",
+        token: _token,
+      });
+      console.log(_token);
+
+      spotify.setAccessToken(_token); //This gets the  token and giving to spotify api
       spotify.getMe().then((user) => {
-        //this is to get the user at that time.
-        console.log(user);
+        //if it could identify the user it will get that user and dispatch the action that is set user to the data layer
+        dispatch({
+          type: "SET_USER",
+          user: user,
+        });
+      });
+      spotify.getUserPlaylists().then((playlists) => {
+        //Here user playlist is pulled from spotifuy and when the promise is returned its stored to data layer
+        dispatch({
+          type: "SET_PLAYLISTS",
+          playlists: playlists,
+        });
+      });
+      spotify.getPlaylist("37i9dQZEVXcCMGAdRxrqKd").then((response) => {
+        // This is a key from real spotify discover weekly Id
+        dispatch({
+          type: "SET_DISCOVER_WEEKLY",
+          discover_weekly: response,
+        });
       });
     }
-    console.log("I have a token", token);
   }, []);
-  return <div className="app">{token ? <Player /> : <Login />}</div>;
+
+  return (
+    <div className="app">
+      {token ? <Player spotify={spotify} /> : <Login />}
+    </div>
+  );
+  //passing spotify as prop to player component.
 }
 
 export default App;
-//spotify-web-api-js is a npm package for wrapping it in app and using all functionality of spotify, a kind of api itself.
