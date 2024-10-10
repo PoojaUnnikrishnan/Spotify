@@ -1,12 +1,12 @@
 // Spotify takes care of user authentication part on its own.
 // (clicking login page it redirects to spotify authorization )
-export const authEndpoint = "https://accounts.spotify.com/authorize";
+export const authEndpoint = process.env.REACT_APP_AUTH_END_POINT
 
 // And this is the redirect url developers provide in spotify developers.  To redirect back to our localhost where app is running.
-const redirectUri = "http://localhost:3000/";
+const redirectUri = process.env.REACT_APP_REDIRECT_URL
 
 //Client id is got from spotify developers.
-const clientId = "25fcd61d0ed54914b2b3329c2b6f9746";
+const clientId = process.env.REACT_APP_CLIENT_ID
 
 //Users scopes provide the different read only features of spotify.
 const scopes = [
